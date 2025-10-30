@@ -1,0 +1,23 @@
+Below is a sample output on the client terminal:
+
+Request timed out.
+Request timed out.
+Reply from 127.0.0.1: PING 3 SAT SEP 13 01:46:16 2025
+RTT: 0.0007369518280029297
+Reply from 127.0.0.1: PING 4 SAT SEP 13 01:46:16 2025
+RTT: 0.0004360675811767578
+Reply from 127.0.0.1: PING 5 SAT SEP 13 01:46:16 2025
+RTT: 0.0003352165222167969
+Reply from 127.0.0.1: PING 6 SAT SEP 13 01:46:16 2025
+RTT: 0.0003409385681152344
+Request timed out.
+Request timed out.
+Reply from 127.0.0.1: PING 9 SAT SEP 13 01:46:18 2025
+RTT: 0.0006020069122314453
+Reply from 127.0.0.1: PING 10 SAT SEP 13 01:46:18 2025
+RTT: 0.00035190582275390625
+
+
+Template:
+Reply from `IP`: PING `number` `WEEKDAY` `MONTH` `DAY` `TIME` `YEAR`
+RTT: `RTT`

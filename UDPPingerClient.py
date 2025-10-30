@@ -22,7 +22,15 @@ def main():
             response, server_address = client_socket.recvfrom(1024)
             end_time = time.time()
             rtt = end_time - start_time
-            print(f"Reply from {server_address[0]}: {response.decode()}")
+            
+            response_message = response.decode()
+            
+            parts = response_message.split()
+            ping_number = parts[1]
+            
+            current_time = time.ctime()
+
+            print(f"Reply from {server_address[0]}: PING {ping_number} {current_time}")
             print(f"RTT: {rtt}")
 
         except socket.timeout:

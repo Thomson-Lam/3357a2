@@ -89,7 +89,9 @@ def handle_request(client_socket):
     print(f"Host: {host}, Port:{port}, Path: {path}")
 
     # Construct cache file path
-    cache_file_name = f"{host}{path.replace('/', '_')}"
+    cache_file_name = f"{host}_{port}{path.replace('/', '_')}"
+    if path == '/':
+        cache_file_name += 'index.html'
     if cache_file_name.endswith('_'):
         cache_file_name = cache_file_name[:-1]
     cache_file_path = os.path.join(CACHE_DIR, cache_file_name)
