@@ -3,23 +3,23 @@ import time
 import sys
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 3: # CLI incorrect usage 
         print("Usage: python UDP_Pinger_client.py <server_host> <server_port>")
         sys.exit(1)
 
     server_host = sys.argv[1]
     server_port = int(sys.argv[2])
 
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    client_socket.settimeout(1)
+    c_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    c_socket.settimeout(1)
 
-    for sequence_number in range(1, 11):
-        message = f"Ping {sequence_number} {time.time()}"
+    for seq_num in range(1, 11):
+        message = f"Ping {seq_num} {time.time()}"
         start_time = time.time()
 
         try:
-            client_socket.sendto(message.encode(), (server_host, server_port))
-            response, server_address = client_socket.recvfrom(1024)
+            c_socket.sendto(message.encode(), (server_host, server_port))
+            response, server_address = c_socket.recvfrom(1024)
             end_time = time.time()
             rtt = end_time - start_time
             
@@ -28,15 +28,15 @@ def main():
             parts = response_message.split()
             ping_number = parts[1]
             
-            current_time = time.ctime()
+            current_time = time.ctime() # current time for print message 
 
-            print(f"Reply from {server_address[0]}: PING {ping_number} {current_time}")
+            print(f"Reply from {server_address[0]}: PING {ping_number} {current_time}") 
             print(f"RTT: {rtt}")
 
         except socket.timeout:
             print("Request timed out.")
 
-    client_socket.close()
+    c_socket.close()
 
 if __name__ == "__main__":
     main()

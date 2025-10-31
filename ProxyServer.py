@@ -3,38 +3,38 @@ import sys
 import threading
 import os
 
-# Define constants
+# constants 
 HOST = 'localhost'
 PORT = 8888
 BUFFER_SIZE = 8192
 CACHE_DIR = 'cache'
 
 def main():
-    # Create cache directory if it doesn't exist
+    # check if cache exists, make one if not 
     if not os.path.exists(CACHE_DIR):
         os.makedirs(CACHE_DIR)
 
-    # Create a TCP socket
+    # TCP 
     proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # Bind the socket to the address
+    # Bind socket to address 
     try:
         proxy_socket.bind((HOST, PORT))
     except socket.error as e:
         print(f"Binding failed: {e}")
         sys.exit()
 
-    # Listen for incoming connections
+    # listen 
     proxy_socket.listen(10)
     print(f"Proxy server running on {HOST}:{PORT}... Press Ctrl+C to stop.")
 
     while True:
         try:
-            # Accept a new connection
+            # new connection 
             client_socket, addr = proxy_socket.accept()
             print(f"Received a connection from: {addr}")
 
-            # Create a new thread to handle the request
+            # create a new thread to handle the request
             threading.Thread(target=handle_request, args=(client_socket,)).start()
         except KeyboardInterrupt:
             proxy_socket.close()
@@ -42,12 +42,12 @@ def main():
             sys.exit()
 
 def handle_request(client_socket):
-    # Receive the request from the client
+    # receive client request 
     request = client_socket.recv(BUFFER_SIZE).decode('utf-8', errors='ignore')
     print("Raw request:")
     print(request)
 
-    # Parse the request
+    # parsing 
     try:
         method = request.split(' ')[0]
         url = request.split(' ')[1]
@@ -55,14 +55,14 @@ def handle_request(client_socket):
         client_socket.close()
         return
 
-    # Handle non-GET requests
+    # non-GET requests
     if method != 'GET':
         response = "HTTP/1.0 405 Method Not Allowed\r\nContent-Type: text/plain\r\nContent-Length: 22\r\n\r\n405 Method Not Allowed"
         client_socket.send(response.encode('utf-8'))
         client_socket.close()
         return
 
-    # Parse the URL
+    # parse url 
     try:
         if '://' in url:
             url = url.split('://')[1]
@@ -88,7 +88,7 @@ def handle_request(client_socket):
     print("Extracted:")
     print(f"Host: {host}, Port:{port}, Path: {path}")
 
-    # Construct cache file path
+    # make the cache file name and path
     cache_file_name = f"{host}_{port}{path.replace('/', '_')}"
     if path == '/':
         cache_file_name += 'index.html'
@@ -96,26 +96,26 @@ def handle_request(client_socket):
         cache_file_name = cache_file_name[:-1]
     cache_file_path = os.path.join(CACHE_DIR, cache_file_name)
 
-    # Check if the file is in cache
+    # check for file in the cache 
     if os.path.exists(cache_file_path):
         print(">>> CACHE HIT <<<")
         print(f"Served from Local Cache: {cache_file_path}")
-        with open(cache_file_path, 'rb') as f:
+        with open(cache_file_path, 'rb') as f: # read the cached file and send it as response 
             response = f.read()
         client_socket.sendall(response)
     else:
         print("<<< CACHE MISS >>>")
         try:
-            # Create a socket to connect to the origin server
+            # socket to original server 
             origin_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             origin_socket.connect((host, port))
             print(f"Connecting to Server...\nConnection successful to {host}:{port}")
 
-            # Send the request to the origin server
+            # send request to original server 
             request_to_server = f"GET {path} HTTP/1.0\r\nHost: {host}\r\nConnection: close\r\nUser-Agent: SimpleProxy/1.0\r\n\r\n"
             origin_socket.send(request_to_server.encode('utf-8'))
 
-            # Receive the response from the origin server
+            # response 
             response_from_server = b""
             while True:
                 data = origin_socket.recv(BUFFER_SIZE)
@@ -124,7 +124,7 @@ def handle_request(client_socket):
                 response_from_server += data
                 client_socket.sendall(data)
 
-            # Save the response to the cache
+            # caching 
             with open(cache_file_path, 'wb') as f:
                 f.write(response_from_server)
             print(f"Saved {len(response_from_server)} bytes to cache")
